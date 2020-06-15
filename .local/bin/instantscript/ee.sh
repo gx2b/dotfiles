@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# help: e  -> insert emoji
+# help: ee  -> insert emoji
 
 # Must have xclip installed to even show menu.
 xclip -h 2>/dev/null || exit 1
