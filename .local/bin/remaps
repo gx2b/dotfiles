@@ -1,0 +1,29 @@
+#!/bin/sh
+# This script is called on startup to remap keys.
+
+# Eurokeys https://eurkey.steffen.bruentjen.eu/
+/usr/bin/setxkbmap eu
+
+# Increase key speed via a rate change
+xset r rate 300 30
+
+#[ -f ~/.config/xmodmap/xmodmap.in ] && xmodmap ~/.config/xmodmap/xmodmap.in
+
+# Map the menu button to right super as well.
+#xmodmap -e 'keycode 135 = Super_R'
+
+# Map the caps lock key to ESC ...
+setxkbmap -option caps:escape_shifted_capslock
+
+# y <=> z
+xmodmap -e 'keycode  29 = z Z z Z agrave Agrave agrave'
+xmodmap -e 'keycode  52 = y Y y Y ydiaeresis Ydiaeresis ydiaeresis'
+
+#ESC <=> `
+xmodmap -e 'keycode   9 = grave asciitilde grave asciitilde dead_grave dead_tilde dead_grave dead_tilde grave asciitilde dead_grave dead_tilde'
+xmodmap -e 'keycode  49 = Escape NoSymbol Escape NoSymbol Escape'
+
+
+
+# But when it is pressed only once, treat it as escape.
+#killall xcape 2>/dev/null ; xcape -e 'Super_L=Escape'
