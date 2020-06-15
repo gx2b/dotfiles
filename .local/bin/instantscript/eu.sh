@@ -13,7 +13,6 @@ LISTFILE="$DIR/resources/unicode.txt"
 selected="$(cat "$LISTFILE" | grep U+ | rofi -dmenu -l 30 -width 40 -i -p Unicode )"
 [[ -z $selected ]] && exit 1
 
-# get first xml tag
 character="$(echo "$selected" | cut -d' ' -f1)"
 echo -n $character | xclip -selection clipboard
 notify-send "'$character' copied to clipboard." &
