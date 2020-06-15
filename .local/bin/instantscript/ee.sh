@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# help: ee  -> insert emoji
+# help: ee  -> emoji picker
 
 xclip -h 2>/dev/null || exit 1
 
