@@ -1,0 +1,22 @@
+#!/bin/sh
+
+scriptdir=~/.local/bin/instantscript
+[ ! -d $scriptdir ] && exit 1
+
+dmenu=/usr/local/bin/dmenu
+[ ! -x $dmenu ] && exit 1
+
+exescript() {
+    [ -x $scriptdir/$1.sh ] &&
+        bash $scriptdir/$1.sh && exit $?
+}
+
+
+letter=$(ls $scriptdir/*.sh | sed -e 's#^.*/\(.\).*$#\1#' | sort -u | $dmenu -p "Level 1:" -F -n)
+
+if [ -x $scriptdir/${letter}.sh ] ; then
+    exescript ${letter}
+else
+    letter2=$(ls $scriptdir/${letter}*.sh | sed -e "s#^.*/${letter}## ; s/.sh$//" | sort -u | $dmenu -p "Level 2:" -F -n)
+    exescript ${letter}${letter2}
+fi
