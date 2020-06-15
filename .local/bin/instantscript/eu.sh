@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# see also: https://github.com/windwp/rofi-color-picker.git
+# Unicode table from: https://gist.github.com/ivandrofly/0fe20773bd712b303f78
 
 # help: eu  -> unicode picker
 
@@ -10,9 +10,7 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 LISTFILE="$DIR/resources/unicode.txt"
 [[ ! -f "$LISTFILE" ]] && echo "$LISTFILE not found" && exit 1
 
-(($#>1)) && shift $((--OPTIND))
-
-selected="$(cat "$LISTFILE" | grep U+ | rofi -dmenu -markup-rows -l 30 -width 40 -i -p Unicode )"
+selected="$(cat "$LISTFILE" | grep U+ | rofi -dmenu -l 30 -width 40 -i -p Unicode )"
 [[ -z $selected ]] && exit 1
 
 # get first xml tag
