@@ -1,0 +1,22 @@
+#!/bin/sh
+
+mnphs=$(TERMCAP=xterm pom $1 | grep -o 'New\|Waxing Crescent\|First Quarter\|Waxing Gibbous\|Full\|Waning Gibbous\|Last Quarter\|Waning Crescent' | grep -m1 '.')
+prcnt=$(TERMCAP=xterm pom $1 | grep -o '[[:digit:]]*%' | grep -o '[[:digit:]]*' )
+
+case "$mnphs" in
+    "New") icon="🌑" prcnt="0" ;;
+    "Waxing Crescent") icon="🌒" ;;
+    "First Quarter") icon="🌓" prcnt="50" ;;
+    "Waxing Gibbous") icon="🌔" ;;
+    "Full") icon="🌕" prcnt="100" ;;
+    "Waning Gibbous") icon="🌖" ;;
+    "Last Quarter") icon="🌗" prcnt="50" ;;
+    "Waning Crescent") icon="🌘" ;;
+    *) echo error ;;
+esac
+
+case $BLOCK_BUTTON in
+    1) pgrep -x dunst >/dev/null && notify-send "🌜$(TERMCAP=xterm pom)" ;;
+esac
+
+echo "${icon} ${prcnt}%"

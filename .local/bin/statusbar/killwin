@@ -1,0 +1,13 @@
+#!/bin/bash
+
+case $BLOCK_BUTTON in
+    1) # wait a little, so xkill or xdotool can grab the mouse
+       sleep 0.1
+       notify-send "Select window" "\nClose: Left Click\nAbort: Right click (or wait 5s)"
+       timeout 5s xdotool selectwindow windowkill  2>/dev/null 1>&2
+       ;;
+esac
+
+printf " ☓"
+
+exit 0
