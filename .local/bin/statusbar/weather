@@ -1,0 +1,67 @@
+#!/bin/sh
+#
+# Weather module for dwmblocks  -  get weather from wttr.in
+#
+# see also github: https://github.com/chubin/wttr.in
+#    or help page: curl -s "wttr.in/:help"
+#
+# the command 'gron' makes it easier to grep/sed the json format.
+#
+# the data for today is in weather[0] (tomorrow=1, day after tomorrow=2)
+# the temperatur is provided in the array hourly[0..7], one for each 3 hours
+# the min temp is taken from 6-24 (hourly[3:7]), as I'm not interested for the early morning hours.
+# If there is not enough data, the min temp is taken from mintempC (not sure if it is needed...)
+#
+# for parsing, one could also use jq, maybe it's easier/faster. Example:
+#    cat weather.json| jq -Sr '.weather[0].hourly[3:7][].chanceofrain' | sort
+#    cat weather.json| jq -Sr '.weather[1].hourly[3:7][].tempC' | sort
+
+[ ! -x /usr/bin/gron ] && echo "ERROR: gron must be installed!" && exit 1
+
+# Location can be passed as argument. Otherwise wttr.in gets the location from your IP.
+# To refresh the data, use -r option.
+# TODO: if you change location, it should also refresh the data!
+refresh=0
+while getopts "rh" o; do case "${o}" in
+    r) refresh=1 ; shift ;;
+    h|*) echo "Usage: $0 [ -r ] [ location ]" ; exit 0 ;;
+esac done
+location="$1"
+
+# json response is saved here:
+wjson=~/.local/share/weather/w.json
+
+# icons
+icold="🥶"
+ihot="🥵"
+irain="🌧"
+
+if [ -f $wjson ]; then
+    timediff=$(($(date '+%s') - $(stat -c %Y ${wjson})))
+else
+    timediff=1000000
+fi
+
+# updated if requested or every hour (3600s)
+[ $refresh -eq 1 -o $timediff -ge 3600 ] && curl -s "wttr.in/${location}?lang=de&format=j1" --silent > $wjson
+
+minC=-1; maxC=-1; rain=-1
+if [ -f $wjson ]; then
+    minC=$(gron $wjson | grep 'weather\[0\].hourly\[[3-7]\].tempC' | sed -e 's/.* = "// ; s/".*//' | sort -rn | tail -1)
+    [ -z $minC ] && minC=$(gron $wjson | grep 'weather\[0\].mintempC' | sed -e 's/.* = "// ; s/".*//')
+    maxC=$(gron $wjson | grep 'weather\[0\].maxtempC' | sed -e 's/.* = "// ; s/".*//')
+    rain=$(gron $wjson | grep 'weather\[0\].hourly.*chanceofrain' | sed -e 's/.* = "// ; s/".*//' | sort -n | tail -n 1)
+fi
+
+printf "%s%d%% %s%d° %s%d°" $irain $rain $icold $minC $ihot $maxC
+
+case $BLOCK_BUTTON in
+    1) nohup $TERMINAL -e sh -c "curl -s 'wttr.in/${location}?lang=de' --silent |less -Srf" >/dev/null 2>&1 &
+        ;;
+    2)
+        ;;
+    3) nohup $TERMINAL -e sh -c "curl -s 'v2.wttr.in/${location}?lang=de' --silent |less -Srf" >/dev/null 2>&1 &
+        ;;
+esac
+
+exit 0
