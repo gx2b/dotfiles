@@ -36,11 +36,8 @@ icold="🥶"
 ihot="🥵"
 irain="🌧"
 
-if [ -f $wjson ]; then
-    timediff=$(($(date '+%s') - $(stat -c %Y ${wjson})))
-else
-    timediff=1000000
-fi
+timediff=1000000
+[ -f $wjson ] && timediff=$(($(date '+%s') - $(stat -c %Y ${wjson})))
 
 # updated if requested or every hour (3600s)
 [ $refresh -eq 1 -o $timediff -ge 3600 ] && curl -s "wttr.in/${location}?lang=de&format=j1" --silent > $wjson
@@ -50,7 +47,7 @@ if [ -f $wjson ]; then
     minC=$(gron $wjson | grep 'weather\[0\].hourly\[[3-7]\].tempC' | sed -e 's/.* = "// ; s/".*//' | sort -rn | tail -1)
     [ -z $minC ] && minC=$(gron $wjson | grep 'weather\[0\].mintempC' | sed -e 's/.* = "// ; s/".*//')
     maxC=$(gron $wjson | grep 'weather\[0\].maxtempC' | sed -e 's/.* = "// ; s/".*//')
-    rain=$(gron $wjson | grep 'weather\[0\].hourly.*chanceofrain' | sed -e 's/.* = "// ; s/".*//' | sort -n | tail -n 1)
+    rain=$(gron $wjson | grep 'weather\[0\].hourly.*chanceofrain' | sed -e 's/.* = "// ; s/".*//' | sort -n | tail -1)
 fi
 
 printf "%s%d%% %s%d° %s%d°" $irain $rain $icold $minC $ihot $maxC

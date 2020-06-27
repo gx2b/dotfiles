@@ -1,12 +1,11 @@
 #!/bin/sh
 
 case $BLOCK_BUTTON in
-    1) setsid -f "st" -e pulsemixer ; pkill -RTMIN+10 dwmblocks  ;;
-    2) pamixer -t && pkill -RTMIN+10 dwmblocks  ;;
-    4) pulsemixer --change-volume +5  && pkill -RTMIN+10 dwmblocks  ;;
-    5) pulsemixer --change-volume -5 && pkill -RTMIN+10 dwmblocks  ;;
+    1) setsid -f "st" -e pulsemixer ;;
+    2) pamixer -t ;;
+    4) pulsemixer --change-volume +5 ;;
+    5) pulsemixer --change-volume -5 ;;
 esac
-
 
 [ $(pamixer --get-mute) = true ] && echo "🔇 00%" && exit
 vol=$(pamixer --get-volume)
@@ -20,3 +19,5 @@ else
 fi
 
 printf "%s %s%%\n" "$icon" "$vol"
+
+exit 0
