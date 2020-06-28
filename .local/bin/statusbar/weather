@@ -20,16 +20,15 @@
 
 # Location can be passed as argument. Otherwise wttr.in gets the location from your IP.
 # To refresh the data, use -r option.
-# TODO: if you change location, it should also refresh the data!
 refresh=0
 while getopts "rh" o; do case "${o}" in
     r) refresh=1 ; shift ;;
     h|*) echo "Usage: $0 [ -r ] [ location ]" ; exit 0 ;;
 esac done
-location="$1"
+location=$1
 
-# json response is saved here:
-wjson=~/.local/share/weather/w.json
+# json response is saved here, one file per location
+wjson=~/.local/share/weather/w-${location:-default}.json
 
 # icons
 icold="🥶"
